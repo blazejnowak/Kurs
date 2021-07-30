@@ -21,13 +21,6 @@ namespace aspnet_core_dotnet_core.Services
 
             stoppingToken.Register(() => Logger.LogInformation("ServiceA is stopping."));
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                Logger.LogInformation("ServiceA is doing background work.");
-
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-            }
-
             Logger.LogInformation("ServiceA has stopped.");
         }
     }
