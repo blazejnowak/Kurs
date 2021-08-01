@@ -23,9 +23,9 @@
     "workerSize": "0",
     "workerSizeId": 0,
     "numberOfWorkers": "1",
-    "hostingPlanName": "[concat('app-', parameters('webAppName'))]",
-    "devWebAppName": "[concat('dev-', parameters('webAppName'))]",
-    "uatWebAppName": "[concat('uat-', parameters('webAppName'))]",
+    "hostingPlanName": "[concat(parameters('webAppName'), '-app')]",
+    "devWebAppName": "[concat(parameters('webAppName'), '-dev')]",
+    "uatWebAppName": "[concat(parameters('webAppName'), '-uat')]",
     "siteProperties": {
       "netFrameworkVersion": "v4.0", // Defines dont net framework version
       "use32BitWorkerProcess": false, // 64-bit platform
