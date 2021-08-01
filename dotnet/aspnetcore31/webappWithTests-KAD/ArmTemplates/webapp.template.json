@@ -4,7 +4,7 @@
   "parameters": {
     "webAppName": {
       "type": "string",
-      "defaultValue": "[concat(uniqueString(resourceGroup().id))]",
+      "defaultValue": "[concat(uniqueString(subscription().subscriptionId))]",
       "metadata": {
         "description": "That name is the name of our application. It has to be unique"
       }
