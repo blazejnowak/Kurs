@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "[concat(uniqueString(resourceGroup().id))]",
+      "metadata": {
+        "description": "That name is the name of our application. It has to be unique"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "variables": {
+    "sku": "Basic",
+    "skuCode": "B1",
+    "workerSize": "0",
+    "workerSizeId": 0,
+    "numberOfWorkers": "1",
+    "hostingPlanName": "[concat('app-', parameters('webAppName'))]",
+    "devWebAppName": "[concat('dev-', parameters('webAppName'))]",
+    "uatWebAppName": "[concat('uat-', parameters('webAppName'))]",
+    "siteProperties": {
+      "netFrameworkVersion": "v4.0", // Defines dont net framework version
+      "use32BitWorkerProcess": false, // 64-bit platform
+      "webSocketsEnabled": true,
+      "http20Enabled": true,
+      "alwaysOn": true, // Always On
+      "requestTracingEnabled": true, // Failed request tracing, aka 'freb'
+      "httpLoggingEnabled": true, // IIS logs (aka Web server logging)
+      "logsDirectorySizeLimit": 40, // 40 MB limit for IIS logs
+      "detailedErrorLoggingEnabled": true // Detailed error messages,
+    },
+    "metadata": [
+      {
+        "name": "CURRENT_STACK",
+        "value": "dotnetcore"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "name": "[variables('hostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('location')]",
+      "apiVersion": "2020-12-01",
+      "sku": {
+        "Tier": "[variables('sku')]",
+        "Name": "[variables('skuCode')]"
+      },
+      "properties": {
+        "name": "[variables('hostingPlanName')]",
+        "workerSize": "[variables('workerSize')]",
+        "workerSizeId": "[variables('workerSizeId')]",
+        "numberOfWorkers": "[variables('numberOfWorkers')]"
+      }
+    },
+    {
+      "name": "[variables('devWebAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[parameters('location')]",
+      "apiVersion": "2020-12-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
+      ],
+      "properties": {
+        "name": "[variables('devWebAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "metadata": "[variables('metadata')]"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2020-12-01",
+          "name": "web",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('devWebAppName'))]"
+          ],
+          "properties": "[variables('siteProperties')]"
+        }
+      ]
+    },
+    {
+      "name": "[variables('uatWebAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[parameters('location')]",
+      "apiVersion": "2020-12-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
+      ],
+      "properties": {
+        "name": "[variables('uatWebAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "metadata": "[variables('metadata')]"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2020-12-01",
+          "name": "web",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('uatWebAppName'))]"
+          ],
+          "properties": "[variables('siteProperties')]"
+        }
+      ]
+    }
+  ]
+}
