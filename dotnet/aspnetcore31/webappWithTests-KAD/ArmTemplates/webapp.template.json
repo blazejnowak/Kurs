@@ -115,5 +115,15 @@
         }
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "webApp-dev": {
+      "type": "string",
+      "value": "[concat('https://', variables('devWebAppName'), '.azurewebsites.net')]"
+    },
+    "webApp-uat": {
+      "type": "string",
+      "value": "[concat('https://', variables('uatWebAppName'), '.azurewebsites.net')]"
+    }
+  }
 }
